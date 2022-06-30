@@ -1,23 +1,33 @@
-import logo from './logo.svg';
+import React, { useEffect, useState, useRef } from 'react';
 import './App.css';
+import History from './components/History';
+import Board from './components/Board';
 
 function App() {
+  const [options, setOptions] = useState([]);
+  const [history, setHistory] = useState([]);
+  const oneTimeMount = useRef(true);
+
+  const getOption = async () => {
+    const header = {
+      'Access-Control-Allow-Origin': 'no-cors',
+    };
+    await fetch('http://demo7919674.mockable.io', { header })
+      .then((res) => res.json())
+      .then((res) => setOptions(res))
+      .catch((err) => console.log(err));
+  };
+  useEffect(() => {
+    if (oneTimeMount.current) {
+      oneTimeMount.current = false;
+      getOption();
+    }
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Board options={options} setHistory={setHistory} />
+      <History history={history} />
     </div>
   );
 }
